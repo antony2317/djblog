@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+    <h1>Добро пожаловать на главную страницу!</h1>
+    <p></p>
+
+    <h2>Список статей:</h2>
+    <ul>
+        {% for article in articles %}
+            <li>
+                <h3><a href="{% url 'article_detail' article.id %}">{{ article.title }}</a></h3>
+                <p>{{ article.content|truncatewords:30 }}</p>
+
+                <small>Опубликовано: {{ article.created_at }}</small>
+                <small>Автор: {{ article.author.username }}</small>
+                {% if request.user == article.author %}
+
+                    <form action="{% url 'delete_article' article.id %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit">Удалить</button>
+                    </form>
+                {% endif %}
+
+            </li>
+        {% empty %}
+            <li>Статьи не найдены.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

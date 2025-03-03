@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ article.title }}</h1>
+    <p>{{ article.content }}</p>
+    <small>Опубликовано: {{ article.published_date }}</small>
+    <small>Добавлено: {{ article.created_at }}</small>
+    <small>Автор: {{ article.author.username }}</small>
+
+    {% if request.user == article.author %}
+        <a href="{% url 'edit_article' article.id %}">Редактировать</a>
+        <form action="{% url 'delete_article' article.id %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit">Удалить</button>
+        </form>
+    {% endif %}
+
+    <h2>Комментарии:</h2>
+    <ul>
+        {% for comment in comments %}
+            <li>
+                <strong>{{ comment.author.username }}</strong> ({{ comment.created_at }}):
+                <p>{{ comment.content }}</p>
+            </li>
+        {% empty %}
+            <li>Комментариев пока нет.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Добавить комментарий:</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Отправить</button>
+    </form>
+
+    <a href="{% url 'index' %}">Вернуться на главную</a>
+{% endblock %}
